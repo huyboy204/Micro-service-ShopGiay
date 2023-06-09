@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git credentialsId: 'github', url: 'https://github.com/huyboy204/DangNhap_Service_BE.git'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def versionTag = "5.0-${env.BUILD_NUMBER}-${new Date().format('yyyyMMddHHmmss')}"
+                    sh "docker build -t huyboy204/dangnhap_service_be:${versionTag} ."
+                    sh "docker push huyboy204/dangnhap_service_be:${versionTag}"
+                    
+                    // Replace version in the deployment file
+                    sh "sed -i 's/{{VERSION}}/${versionTag}/g' jenkins-aks-deploy-from-dockerhub.yaml"
+                }
+            }
+        }
+        
+        stage ('K8S Deploy') {
+            steps {
+                script {
+                    withKubeConfig([credentialsId: 'k8s', serverUrl: '']) {
+                        sh ('kubectl apply -f jenkins-aks-deploy-from-dockerhub.yaml')
+                    }
+                }
+            }
+        }
+    }
+}

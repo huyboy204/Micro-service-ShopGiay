@@ -1,0 +1,11 @@
+DangNhap_Service_BE/node_modules
+DangNhap_Service_BE/.env
+Product_Service_BE/node_modules
+Product_Service_BE/.env
+User_Service_BE/node_modules
+User_Service_BE/.env
+Recipt_Service_BE/node_modules
+Recipt_Service_BE/.env
+Image_Service_BE/node_modules
+Image_Service_BE/.env
+MicroSV-workspace.code-workspace

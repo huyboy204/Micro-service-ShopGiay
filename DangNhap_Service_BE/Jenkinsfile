@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git credentialsId: 'github', url: 'https://github.com/huyboy204/DangNhap_Service_BE.git'
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/') {
+                    sh 'docker build -t huyboy204/dangnhap_service_be:2.0 .'
+                    sh 'docker push huyboy204/dangnhap_service_be:2.0'
+                }
+            }
+        }
+        stage ('K8S Deploy') {
+            steps {
+                script {
+                    withKubeConfig([credentialsId: 'k8s', serverUrl: '']) {
+                    sh ('kubectl apply -f  jenkins-aks-deploy-from-dockerhub.yaml')
+                    }
+                }
+            }
+        }
+    }
+}

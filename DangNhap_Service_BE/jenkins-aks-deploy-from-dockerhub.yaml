@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dangnhap-service
+  namespace: shop-giay
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dangnhap-service
+  template:
+    metadata:
+      labels:
+        app: dangnhap-service
+    spec:
+      containers:
+        - name: dangnhap-service
+          image: huyboy204/dangnhap_service_be:2.0
+          ports:
+            - containerPort: 3000
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: dangnhap-service
+  namespace: shop-giay
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: dangnhap-service
